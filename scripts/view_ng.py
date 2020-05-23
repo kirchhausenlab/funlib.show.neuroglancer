@@ -20,10 +20,20 @@ parser.add_argument(
     nargs='+',
     action='append',
     help="The datasets in the container to show")
+parser.add_argument(
+    '--serve',
+    '-s',
+    action='store_true',
+    help='Serve neuroglancer on public IP'
+)
 
 args = parser.parse_args()
 
-neuroglancer.set_server_bind_address('0.0.0.0')
+if args.serve:
+    neuroglancer.set_server_bind_address('0.0.0.0')
+else:
+    neuroglancer.set_server_bind_address()
+
 viewer = neuroglancer.Viewer()
 
 for f, datasets in zip(args.file, args.datasets):
@@ -57,7 +67,7 @@ for f, datasets in zip(args.file, args.datasets):
 
 url = str(viewer)
 print(url)
-webbrowser.open_new(url)
+webbrowser.open_new_tab(url)
 
 print("Press ENTER to quit")
 input()
