@@ -35,6 +35,7 @@ viewer = neuroglancer.Viewer()
 
 for f, datasets in zip(args.file, args.datasets):
 
+    f = f.rstrip('/')
     arrays = []
     for ds in datasets:
         try:
@@ -42,7 +43,7 @@ for f, datasets in zip(args.file, args.datasets):
             print("Adding %s, %s" % (f, ds))
             a = daisy.open_ds(f, ds)
 
-        except:
+        except BaseException:
 
             print("Didn't work, checking if this is multi-res...")
 
