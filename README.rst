@@ -11,5 +11,3 @@ Currently contains:
 - a modified ``video_tool.py`` to work with ``LocalVolume``
 
 - a convenience method to add daisy-like arrays to a neuroglancer context
-
-- a script to launch neuroglancer with datasets specified via command line
