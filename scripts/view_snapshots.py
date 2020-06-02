@@ -42,13 +42,20 @@ snapshots = [
     if f.endswith('.hdf')
 ]
 
-snapshots = random.sample(snapshots, args.number)
+snapshots = random.sample(snapshots, min(args.number, len(snapshots)))
 logger.debug(f'snapshots: {snapshots}')
 
 subprocesses = []
 for s in snapshots:
     ds_strings = [str(i) for i in args.datasets]
-    cmd = ["python", "view_ng.py", "-f", f"{s}", "-d", *ds_strings, "--add_prefix"]
+    cmd = [
+        "python",
+        "~/code/funlib.show.neuroglancer/scripts/view_ng.py",
+        "-f",
+        f"{s}",
+        "-d",
+        *ds_strings,
+        "--add_prefix"]
     logger.debug(' '.join(cmd))
     proc = subprocess.Popen(' '.join(cmd), shell=True, stdin=subprocess.PIPE)
     subprocesses.append(proc)
