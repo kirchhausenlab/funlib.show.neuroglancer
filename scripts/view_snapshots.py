@@ -50,7 +50,7 @@ for s in snapshots:
     ds_strings = [str(i) for i in args.datasets]
     cmd = [
         "python",
-        "~/code/funlib.show.neuroglancer/scripts/view_ng.py",
+        "~/code/src/funlib.show.neuroglancer/scripts/view_ng.py",
         "-f",
         f"{s}",
         "-d",
