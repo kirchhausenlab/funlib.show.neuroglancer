@@ -53,7 +53,7 @@ def view_ng(file_path, datasets, serve, add_prefix=False):
                 add_layer(s, array, dataset)
 
     url = str(viewer)
-    logger.info(url)
+    logger.info(f"\n\t\t{url}\n")
     webbrowser.open_new_tab(url)
 
     logger.info("Press ENTER to quit")
