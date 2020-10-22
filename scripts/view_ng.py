@@ -12,18 +12,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-def str_or_none(x):
-    """Type to pass python `None` via argparse
-
-    Args:
-        x (str)
-
-    Returns:
-        str or `None`
-    """
-    return None if x == 'None' or x == 'none' else x
-
-
 def view_ng(file_path, datasets, shaders, serve, add_prefix=False):
     if serve:
         neuroglancer.set_server_bind_address('0.0.0.0')
@@ -68,6 +56,7 @@ def view_ng(file_path, datasets, shaders, serve, add_prefix=False):
             shaders = [None] * len(datasets)
         else:
             assert len(shaders) == len(datasets)
+            shaders = [None if s == 'default' else s for s in shaders] 
 
         with viewer.txn() as s:
             for array, dataset, shad in zip(arrays, datasets, shaders):
@@ -106,8 +95,8 @@ if __name__ == '__main__':
     parser.add_argument(
         '--shaders',
         '-s',
-        type=str_or_none,
-        choices=[None, 'rgb', 'mask', 'heatmap', 'probmap'],
+        type=str,
+        choices=['default', 'rgb', 'mask', 'heatmap', 'probmap'],
         default=None,
         nargs='+',
         action='append',
