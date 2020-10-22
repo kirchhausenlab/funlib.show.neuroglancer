@@ -105,11 +105,25 @@ void main() {
 
     elif shader == 'heatmap':
         shader="""
-void main() {
-    float v = toNormalized(getDataValue(0));
+#uicontrol float thres slider(min=0.0, max=1.0, default=0.0)
+void main () {
+    float v = toNormalized(getDataValue());
     vec4 rgba = vec4(0,0,0,0);
-    if (v != 0.0) {
+    if (v > thres) {
         rgba = vec4(colormapJet(v), 1.0);
+    } else {
+        rgba = vec4(colormapJet(v), 0.25);
+    }
+    emitRGBA(rgba);
+}"""
+    elif shader == 'probmap':
+        shader = """
+#uicontrol float thres slider(min=0.0, max=1.0, default=0.5)
+void main () {
+    float v = toNormalized(getDataValue());
+    vec4 rgba = vec4(0,0,0,0);
+    if (v > thres) {
+        rgba = vec4(1.0, 0.0, 0.0, 1.0);
     }
     emitRGBA(rgba);
 }"""
