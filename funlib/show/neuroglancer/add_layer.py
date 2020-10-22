@@ -14,7 +14,6 @@ def add_layer(
     c=[0, 1, 2],
     h=[0.0, 0.0, 1.0],
 ):
-
     """Add a layer to a neuroglancer context.
 
     Args:
@@ -56,7 +55,7 @@ def add_layer(
             A list of floats to define rgb color for an rgba shader
     """
 
-    is_multiscale = type(array) == list
+    is_multiscale = isinstance(array, list)
 
     if not is_multiscale:
 
@@ -79,7 +78,8 @@ def add_layer(
             attrs = {k: v[::-1] for k, v in attrs.items()}
         dimensions = neuroglancer.CoordinateSpace(**attrs)
 
-        voxel_offset = [0] * channel_dims + list(a.roi.get_offset() / a.voxel_size)
+        voxel_offset = [0] * channel_dims + \
+            list(a.roi.get_offset() / a.voxel_size)
 
     else:
         dimensions = []
@@ -172,13 +172,27 @@ void main() {
   emitGrayscale(255.0*toNormalized(getDataValue()));
 }"""
 
-    elif shader == "heatmap":
+    elif shader == 'heatmap':
         shader = """
-void main() {
-    float v = toNormalized(getDataValue(0));
+#uicontrol float thres slider(min=0.0, max=1.0, default=0.0)
+void main () {
+    float v = toNormalized(getDataValue());
     vec4 rgba = vec4(0,0,0,0);
-    if (v != 0.0) {
+    if (v > thres) {
         rgba = vec4(colormapJet(v), 1.0);
+    } else {
+        rgba = vec4(colormapJet(v), 0.25);
+    }
+    emitRGBA(rgba);
+}"""
+    elif shader == 'probmap':
+        shader = """
+#uicontrol float thres slider(min=0.0, max=1.0, default=0.5)
+void main () {
+    float v = toNormalized(getDataValue());
+    vec4 rgba = vec4(0,0,0,0);
+    if (v > thres) {
+        rgba = vec4(1.0, 0.0, 0.0, 1.0);
     }
     emitRGBA(rgba);
 }"""
