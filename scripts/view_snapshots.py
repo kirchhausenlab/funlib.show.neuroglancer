@@ -9,7 +9,7 @@ import time
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
