@@ -37,7 +37,7 @@ def view_ng(file_path, datasets, shaders, serve, add_prefix=False):
                 logger.debug("Adding %s, %s" % (f, ds))
                 a = daisy.open_ds(f, ds)
 
-            except BaseException:
+            except KeyError:
 
                 logger.debug("Didn't work, checking if this is multi-res...")
 
@@ -46,6 +46,9 @@ def view_ng(file_path, datasets, shaders, serve, add_prefix=False):
                     os.path.relpath(s, f)
                     for s in scales
                 ],))
+                if not scales:
+                    raise ValueError(f"Did not find {f}, {ds}")
+
                 a = [
                     daisy.open_ds(f, os.path.relpath(scale_ds, f))
                     for scale_ds in scales
@@ -56,7 +59,7 @@ def view_ng(file_path, datasets, shaders, serve, add_prefix=False):
             shaders = [None] * len(datasets)
         else:
             assert len(shaders) == len(datasets)
-            shaders = [None if s == 'default' else s for s in shaders] 
+            shaders = [None if s == 'default' else s for s in shaders]
 
         with viewer.txn() as s:
             for array, dataset, shad in zip(arrays, datasets, shaders):
