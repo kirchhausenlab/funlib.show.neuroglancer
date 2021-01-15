@@ -51,7 +51,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-regex = r'(\d+)\.hdf'
+regex = r'(\d+)\.(hdf|zarr)'
 snapshots = [
     os.path.join(args.path, f)
     for f in os.listdir(args.path)
