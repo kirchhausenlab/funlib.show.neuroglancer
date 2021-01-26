@@ -63,6 +63,11 @@ parser.add_argument(
         '`rgb` for three channel datasets.'
     )
 )
+parser.add_argument(
+    '--add_prefix',
+    action='store_true',
+    help="Add a prefix to each dataset name"
+)
 
 args = parser.parse_args()
 
@@ -188,6 +193,7 @@ else:
 
 for f, datasets, shaders in zip(args.file, args.datasets, args.shaders):
 
+    name_prefix = '/'.join(f.strip('/').split('/')[-2:])
     arrays = []
     for ds in datasets:
         try:
@@ -223,6 +229,8 @@ for f, datasets, shaders in zip(args.file, args.datasets, args.shaders):
 
     with viewer.txn() as s:
         for (array, dataset), shad in zip(arrays, shaders):
+            if args.add_prefix:
+                dataset = os.path.join(name_prefix, dataset)
             add_layer(
                 context=s,
                 array=array,
