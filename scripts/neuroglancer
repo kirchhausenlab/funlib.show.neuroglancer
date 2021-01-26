@@ -272,7 +272,7 @@ if args.graphs:
 url = str(viewer)
 print(url)
 if os.environ.get("DISPLAY") and not args.no_browser:
-    webbrowser.open_new(url)
+    webbrowser.open_new_tab(url)
 
 print("Press ENTER to quit")
 input()
