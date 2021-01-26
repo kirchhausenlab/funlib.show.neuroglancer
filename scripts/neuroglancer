@@ -39,11 +39,21 @@ parser.add_argument(
     default=False,
     const=True,
     help="If set, do not open a browser, just print a URL")
+parser.add_argument(
+    '--serve',
+    action='store_true',
+    help="Serve neuroglancer on public IP."
+)
 
 args = parser.parse_args()
 
-neuroglancer.set_server_bind_address('0.0.0.0')
+if args.serve:
+    neuroglancer.set_server_bind_address('0.0.0.0')
+else:
+    neuroglancer.set_server_bind_address()
+
 viewer = neuroglancer.Viewer()
+
 
 def to_slice(slice_str):
 
@@ -52,6 +62,7 @@ def to_slice(slice_str):
         return values[0]
 
     return slice(*values)
+
 
 def parse_ds_name(ds):
 
@@ -64,6 +75,7 @@ def parse_ds_name(ds):
     slices = list(map(to_slice, slices.rstrip(']').split(',')))
 
     return ds, slices
+
 
 class Project:
 
@@ -79,6 +91,7 @@ class Project:
         ret = self.array[slices]
         return ret
 
+
 def slice_dataset(a, slices):
 
     dims = a.roi.dims()
@@ -88,7 +101,7 @@ def slice_dataset(a, slices):
         if isinstance(s, slice):
             raise NotImplementedError("Slicing not yet implemented!")
         else:
-            index = (s - a.roi.get_begin()[d])//a.voxel_size[d]
+            index = (s - a.roi.get_begin()[d]) // a.voxel_size[d]
             a.data = Project(a.data, d, index)
             a.roi = daisy.Roi(
                 a.roi.get_begin()[:d] + a.roi.get_begin()[d + 1:],
@@ -96,6 +109,7 @@ def slice_dataset(a, slices):
             a.voxel_size = a.voxel_size[:d] + a.voxel_size[d + 1:]
 
     return a
+
 
 def open_dataset(f, ds):
     original_ds = ds
@@ -118,7 +132,7 @@ def open_dataset(f, ds):
     try:
         zarr.open(f)[ds].keys()
         is_multiscale = True
-    except:
+    except BaseException:
         is_multiscale = False
 
     if not is_multiscale:
@@ -129,7 +143,8 @@ def open_dataset(f, ds):
 
         if a.roi.dims() == 2:
             print("ROI is 2D, recruiting next channel to z dimension")
-            a.roi = daisy.Roi((0,) + a.roi.get_begin(), (a.shape[-3],) + a.roi.get_shape())
+            a.roi = daisy.Roi((0,) + a.roi.get_begin(),
+                              (a.shape[-3],) + a.roi.get_shape())
             a.voxel_size = daisy.Coordinate((1,) + a.voxel_size)
 
         if a.roi.dims() == 4:
@@ -143,7 +158,9 @@ def open_dataset(f, ds):
 
         return [(a, ds)]
     else:
-        return [([daisy.open_ds(f, f"{ds}/{key}") for key in zarr.open(f)[ds].keys()], ds)]
+        return [([daisy.open_ds(f, f"{ds}/{key}")
+                  for key in zarr.open(f)[ds].keys()], ds)]
+
 
 for f, datasets in zip(args.file, args.datasets):
 
@@ -187,7 +204,7 @@ if args.graphs:
             try:
                 ids = daisy.open_ds(f, graph + '-ids').data
                 loc = daisy.open_ds(f, graph + '-locations').data
-            except:
+            except BaseException:
                 loc = daisy.open_ds(f, graph).data
                 ids = None
             dims = loc.shape[-1]
