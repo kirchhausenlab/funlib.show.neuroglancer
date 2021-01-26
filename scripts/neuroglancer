@@ -44,6 +44,20 @@ parser.add_argument(
     action='store_true',
     help="Serve neuroglancer on public IP."
 )
+parser.add_argument(
+    '--shaders',
+    '-s',
+    type=str,
+    choices=['default', 'rgb', 'mask', 'heatmap', 'probmap'],
+    default=None,
+    nargs='+',
+    action='append',
+    help=(
+        'The shaders to be used for each dataset. '
+        'Defaults to `mask` for single channel, '
+        '`rgb` for three channel datasets.'
+    )
+)
 
 args = parser.parse_args()
 
@@ -162,7 +176,12 @@ def open_dataset(f, ds):
                   for key in zarr.open(f)[ds].keys()], ds)]
 
 
-for f, datasets in zip(args.file, args.datasets):
+if args.shaders is None:
+    args.shaders = [None] * len(args.file)
+else:
+    assert len(args.shaders) == len(args.file)
+
+for f, datasets, shaders in zip(args.file, args.datasets, args.shaders):
 
     arrays = []
     for ds in datasets:
@@ -191,9 +210,20 @@ for f, datasets in zip(args.file, args.datasets):
         for a in dataset_as:
             arrays.append(a)
 
+    if shaders is None:
+        shaders = [None] * len(datasets)
+    else:
+        assert len(shaders) == len(datasets)
+        shaders = [None if s == 'default' else s for s in shaders]
+
     with viewer.txn() as s:
-        for array, dataset in arrays:
-            add_layer(s, array, dataset)
+        for (array, dataset), shad in zip(arrays, shaders):
+            add_layer(
+                context=s,
+                array=array,
+                name=dataset,
+                shader=shad
+            )
 
 if args.graphs:
     for f, graphs in zip(args.file, args.graphs):
