@@ -10,11 +10,16 @@ import webbrowser
 import numpy as np
 import zarr
 
+
+def str_rstrip_slash(x):
+    return x.rstrip('/')
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     '--file',
     '-f',
-    type=str,
+    type=str_rstrip_slash,
     action='append',
     help="The path to the container to show")
 parser.add_argument(
