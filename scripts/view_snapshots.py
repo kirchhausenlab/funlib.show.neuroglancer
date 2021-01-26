@@ -11,7 +11,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter
+)
 parser.add_argument(
     '--path',
     '-p',
@@ -71,8 +73,7 @@ subprocesses = []
 for s in snapshots:
     ds_strings = [str(i) for i in args.datasets]
     cmd = [
-        "python",
-        "~/code/src/funlib.show.neuroglancer/scripts/view_ng.py",
+        "neuroglancer",
         "-f",
         f"{s}",
         "-d",
