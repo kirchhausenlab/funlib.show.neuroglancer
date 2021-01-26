@@ -9,7 +9,8 @@ setup(
         license='MIT',
         install_requires=[
             'neuroglancer',
-            'daisy'
+            'daisy',
+            'zarr',
         ],
         packages=[
             'funlib.show.neuroglancer'
